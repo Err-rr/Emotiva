@@ -1,0 +1,6 @@
+# Ignore Python virtual environment and temporary files
+venv/
+__pycache__/
+*.mp3
+*.pyc
+.DS_Store
