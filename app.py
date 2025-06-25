@@ -1,6 +1,6 @@
 import streamlit as st
 from transformers import pipeline
-from googletrans import Translator
+from deep_translator import GoogleTranslator
 from gtts import gTTS
 from datetime import datetime
 
@@ -36,25 +36,25 @@ def load_model():
     return pipeline("text-classification", model="j-hartmann/emotion-english-distilroberta-base", top_k=None)
 
 classifier = load_model()
-translator = Translator()
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# --------- Language & Emotion Detection ---------
+# --------- Language Detection ---------
 def detect_language(text):
     try:
-        lang = translator.detect(text).lang
-        return 'hi' if lang == 'hi' else 'en'
+        translated = GoogleTranslator(source='auto', target='en').translate(text)
+        return 'hi' if translated != text else 'en'
     except:
         return 'en'
 
+# --------- Emotion Detection ---------
 def detect_emotion(text):
     result = classifier(text)[0]
     top = max(result, key=lambda x: x['score'])
     return top['label'].lower()
 
-# --------- Chatbot Response Logic ---------
+# --------- Generate Reply ---------
 def generate_reply(user_input, emotion, language):
     user_input_lower = user_input.lower()
 
@@ -101,14 +101,14 @@ def generate_reply(user_input, emotion, language):
     e_text = empathy.get(emotion, {}).get(language, "")
     return f"{e_text}{core[language]}"
 
-# --------- Text to Speech ---------
+# --------- TTS ---------
 def speak(text, lang='en'):
     tts = gTTS(text=text, lang=lang)
     filename = f"response_{datetime.now().timestamp()}.mp3"
     tts.save(filename)
     return filename
 
-# --------- Chat UI ---------
+# --------- Chat Display ---------
 for idx, (role, message, lang) in enumerate(st.session_state.chat_history):
     if role == "user":
         st.chat_message("user").write(message)
@@ -119,7 +119,7 @@ for idx, (role, message, lang) in enumerate(st.session_state.chat_history):
                 audio_path = speak(message, lang)
                 st.audio(audio_path, format="audio/mp3")
 
-# --------- New Input ---------
+# --------- New User Message ---------
 user_input = st.chat_input("Type your message here...")
 
 if user_input:
