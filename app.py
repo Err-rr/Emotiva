@@ -399,7 +399,7 @@ with col1:
         """, unsafe_allow_html=True)
     
     st.markdown("<h1 style='text-align:center; color: white;'>🤖 Emotiva</h1>", unsafe_allow_html=True)
-    st.markdown("<h4 style='text-align:center; color: #cccccc;'>Where Every Mood Matters</h4>", unsafe_allow_html=True)
+    st.markdown("<h4 style='text-align:center; color: #cccccc;'>Where Every Matter Matters</h4>", unsafe_allow_html=True)
     
     if st.button("📊 Mood Analysis", use_container_width=True):
         st.session_state.show_mood_popup = True
